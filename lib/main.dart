@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:paschaloliver/feature/auth/view/account_type_view.dart';
 import 'package:paschaloliver/feature/splash/splash_view.dart';
+
+import 'feature/auth/view/sample.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -10,8 +12,8 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+  // This widget is the root of your application.
   @override
-
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
@@ -19,7 +21,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: SplashScreen(),
+      // home: SplashScreen(),
+      home: HandyResetPasswordScreen(),
     );
   }
 }

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:paschaloliver/feature/splash/onbordaing_view.dart';
+
 import '../../../app_ground.dart';
 import '../../core/constants/assets.dart';
 import '../../core/network/api_service/token_meneger.dart';
+import '../auth/view/welcome_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -28,13 +29,13 @@ class _SplashScreenState extends State<SplashScreen> {
     if (loggedIn) {
       Get.to(() => AppGround());
     } else {
-      Get.offAll(() => OnboardingScreen());
+      Get.offAll(() => WelcomeScreenView());
     }
 
     if (loggedIn) {
       Get.offAll(() => AppGround()); // must be offAll
     } else {
-      Get.offAll(() => OnboardingScreen());
+      Get.offAll(() => WelcomeScreenView());
     }
   }
 
@@ -43,7 +44,7 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
-      body: Center(child: Image.asset(Images.appLogo,height: 188,width: 160,),),
+      body: Center(child: Image.asset(Images.appLogo, height: 188, width: 160)),
     );
   }
 }

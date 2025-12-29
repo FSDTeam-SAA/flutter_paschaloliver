@@ -11,8 +11,7 @@ class ChooseAccountTypeView extends StatefulWidget {
   const ChooseAccountTypeView({super.key});
 
   @override
-  State<ChooseAccountTypeView> createState() =>
-      _ChooseAccountTypeViewState();
+  State<ChooseAccountTypeView> createState() => _ChooseAccountTypeViewState();
 }
 
 class _ChooseAccountTypeViewState extends State<ChooseAccountTypeView> {
@@ -25,27 +24,32 @@ class _ChooseAccountTypeViewState extends State<ChooseAccountTypeView> {
       backgroundColor: Colors.white,
       appBar: AppBar(backgroundColor: Colors.white, elevation: 0),
       body: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Choose Account Type',
+              'What will you do on HandyNaija?',
               style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 15),
+            Text(
+              "This decision is not final. you can later be both a client and a professional from the same account if you wish.",
+              style: TextStyle(color: Colors.black),
             ),
             const SizedBox(height: 32),
 
             _accountOption(
-              title: 'User',
-              subtitle: 'Someone who receives services',
+              title: 'Book a Service',
+              subtitle: '(I am a client)',
               icon: Icons.account_circle_outlined,
               value: AccountType.user,
             ),
             const SizedBox(height: 16),
 
             _accountOption(
-              title: 'Service Provider',
-              subtitle: 'Someone who provides services',
+              title: 'Offer Services',
+              subtitle: '(I am a professional)',
               icon: Icons.handyman_outlined,
               value: AccountType.serviceProvider,
             ),
@@ -55,7 +59,9 @@ class _ChooseAccountTypeViewState extends State<ChooseAccountTypeView> {
             ElevatedButton(
               onPressed: selectedType == null ? null : _continue,
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.appColor,
+                backgroundColor: selectedType == null
+                    ? Colors.white
+                    : AppColors.appColor,
                 minimumSize: const Size(double.infinity, 56),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -63,9 +69,14 @@ class _ChooseAccountTypeViewState extends State<ChooseAccountTypeView> {
               ),
               child: const Text(
                 'Continue',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
               ),
-            )
+            ),
+            SizedBox(height: 40),
           ],
         ),
       ),
@@ -73,11 +84,10 @@ class _ChooseAccountTypeViewState extends State<ChooseAccountTypeView> {
   }
 
   void _continue() {
-    final role =
-        selectedType == AccountType.user ? 'customer' : 'provider';
+    final role = selectedType == AccountType.user ? 'customer' : 'provider';
 
     roleController.setRole(role);
-    Get.to(() =>  SignUpView());
+    Get.to(() => SignUpView());
   }
 
   Widget _accountOption({
@@ -92,41 +102,64 @@ class _ChooseAccountTypeViewState extends State<ChooseAccountTypeView> {
       onTap: () => setState(() => selectedType = value),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.all(20),
+        //
+        //  padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFFEEFE7) : const Color(0xFFF5F5F5),
+          color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isSelected ? AppColors.appColor : Colors.transparent,
-          ),
+          border: Border.all(color: isSelected ? Colors.black : Colors.white),
         ),
         child: Row(
           children: [
-            CircleAvatar(
-              radius: 28,
-              backgroundColor: AppColors.appColor.withOpacity(0.15),
-              child: Icon(icon, color: AppColors.appColor),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                height: 100,
+                width: 100,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  color: const Color.fromARGB(255, 250, 250, 250),
+                  shape: BoxShape.rectangle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 20,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+
+                padding: const EdgeInsets.all(0),
+                child: Image.asset(
+                  "assets/images/client.png",
+                  fit: BoxFit.fill,
+                ),
+              ),
             ),
+
             const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title,
-                      style: const TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.w600)),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                   const SizedBox(height: 4),
-                  Text(subtitle,
-                      style: TextStyle(color: Colors.grey[600])),
+                  Text(subtitle, style: TextStyle(color: Colors.black)),
                 ],
               ),
             ),
-            Radio<AccountType>(
+            /*    Radio<AccountType>(
               value: value,
               groupValue: selectedType,
               onChanged: (v) => setState(() => selectedType = v),
               activeColor: AppColors.appColor,
-            ),
+            ), */
           ],
         ),
       ),

@@ -3,8 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:paschaloliver/app_ground.dart';
 import 'package:paschaloliver/core/constants/app_colors.dart';
-import 'package:paschaloliver/feature/auth/view/choose_account_view.dart';
 
+
+import 'account_type_view.dart';
 import 'sign_in_view.dart';
 
 class WelcomeScreenView extends StatelessWidget {
@@ -85,7 +86,7 @@ class WelcomeScreenView extends StatelessWidget {
               _primaryButton(
                 title: 'Create new account',
                 color: AppColors.appColor,
-                onTap: () => Get.to(() => ChooseAccountView()),
+                onTap: () => Get.to(() => ChooseAccountTypeView()),
               ),
               const SizedBox(height: 16),
               _primaryButton(

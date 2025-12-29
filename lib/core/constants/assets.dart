@@ -1,88 +1,28 @@
-class Assets {
-  // ----------- logos -----------
-  static const String appLogo = 'assets/images/applogo.png';
+class Images {
+  static const String appLogo = 'assets/images/appLogo.png';
 
-  // ----------- images -----------
-  static const String _imageAssets = 'assets/images';
-  static const String onBoarding1 = '$_imageAssets/onboarding_1.png';
-  static const String onBoarding2 = '$_imageAssets/onboarding_2.png';
-  static const String onBoarding3 = '$_imageAssets/onboarding_3.png';
-  static const String onBoarding4 = '$_imageAssets/onboarding_4.png';
-  static const String serviceSelect = '$_imageAssets/service_select.png';
-  static const String car = '$_imageAssets/car.png';
-  static const String van = '$_imageAssets/van.png';
-  static const String truck = '$_imageAssets/truck.png';
-  static const String stripe = '$_imageAssets/stripe.png';
-  static const String paymentSuccessful =
-      '$_imageAssets/payment_successful.png';
+  // profile ====================
 
+  static const String edit = 'assets/profile/edit.png';
+  static const String lock = 'assets/profile/lock.png';
+  static const String subscription = 'assets/profile/subscription.png';
+  static const String lock1 = 'assets/profile/lock1.png';
+  static const String term = 'assets/profile/terms.png';
+  static const String faq = 'assets/profile/faq.png';
 
+  static const String account = 'assets/images/account.png';
 
-  static const String moto2='$_imageAssets/moto2.png';
-  static const String moto3='$_imageAssets/moto3.png';
-  static const String cars='$_imageAssets/car.png';
-  static const String trucks='$_imageAssets/truck.png';
+  static const String notification = 'assets/images/notif.png';
 
-  // ----------- icons -----------
-  static const String _iconAssets = 'assets/icons';
-  static const String email = '$_iconAssets/mail.png';
-  static const String email2 = '$_iconAssets/mail-02.png';
-  static const String lock = '$_iconAssets/lock.png';
-  static const String user = '$_iconAssets/user.png';
-  static const String person = '$_iconAssets/person.png';
-  static const String service = '$_iconAssets/service.png';
-  static const String home = '$_iconAssets/home.svg';
-  static const String booking = '$_iconAssets/booking.svg';
-  static const String date = '$_iconAssets/date.svg';
-  static const String message = '$_iconAssets/message.svg';
-  static const String profile = '$_iconAssets/profile.svg';
-  static const String edit = '$_iconAssets/edit.svg';
-  static const String carOwner = '$_iconAssets/car_owner.png';
-  static const String carWasher = '$_iconAssets/car_washer.png';
-  static const history = "$_iconAssets/history.png";
-  static const policy = "$_iconAssets/all_policies.png";
-  static const testimonial = "$_iconAssets/customer_testimonial.png";
-  static const faq = "$_iconAssets/faq.png";
-  static const support = "$_iconAssets/live_support.png";
-  static const share = "$_iconAssets/share_a_friend.png";
-  static const logout = "$_iconAssets/logout.png";
-  static const availableCoupon = "$_iconAssets/available_coupon.png";
-  static const shieldOff = "$_iconAssets/shield-off.png";
-  static const legalDoc = "$_iconAssets/legal_doc.png";
-  static const lockBlack = "$_iconAssets/lock_black.png";
-  static const location = "$_iconAssets/target.png";
-  static const calender = "$_iconAssets/calender.png";
-  static const services = "$_iconAssets/services.png";
-  static const clock = "$_iconAssets/clock.png";
-  static const amount = "$_iconAssets/amount.png";
-  static const marker = "$_iconAssets/marker.png";
-  static const status = "$_iconAssets/status.png";
-  static const messagePng = "$_iconAssets/message.png";
-  static const send = "$_iconAssets/send.png";
+  static const String wake = 'assets/images/wake.png';
+  static const String privacy = 'assets/images/privacy.png';
+  // static const String terms = 'assets/images/terms.png';
+  static const String logout = 'assets/images/logout.png';
 
-//========= select service Images
+  // onboarding Images
+  static const obg1 = "assets/images/onbg1.png";
+  static const obg2 = "assets/images/onbg2.png";
+  static const obg3 = "assets/images/onbg3.png";
 
-  static const String driver = '$_imageAssets/driver.png';
-  static const String nurse = '$_imageAssets/nurse.png';
-  static const String beauty = '$_imageAssets/beauty.png';
-  static const String doctor = '$_imageAssets/doctor.png';
-  static const String housekeper = '$_imageAssets/house.png';
-  static const String pharmacist = '$_imageAssets/pharmacist.png';
-  static const String rest = '$_imageAssets/rest.png';
-  static const String constr = '$_imageAssets/const.png';
-  static const String auto = '$_imageAssets/auto.png';
-
-  // ------------- Identity -------------
-  static const String govCardVerify = '$_imageAssets/gov_card.png';
-  static const String photoVerify = '$_imageAssets/photo_upload.png';
-  static const String uploadIdentity = '$_imageAssets/upload_bottom.png';
-
-//-------------- service images
-  static const String transport = 'assets/services/transport.png';
-  static const String doctors = 'assets/services/doctor.png';
-  static const String resturent = 'assets/services/resturent.png';
-  static const String beautys = 'assets/services/beautys.png';
-  static const String construction = 'assets/services/construction.png';
-  static const String autoRepairs = 'assets/services/reparir.png';
-  static const String houseKeepers = 'assets/services/housekeeper.png';
+  // static const String pt4 = 'assets/images/pt4.png';
 }

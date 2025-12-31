@@ -6,7 +6,7 @@ import 'package:paschaloliver/core/constants/app_colors.dart';
 
 
 import 'account_type_view.dart';
-import 'sign_in_view.dart';
+import 'handy_login_screen.dart';
 
 class WelcomeScreenView extends StatelessWidget {
   const WelcomeScreenView({super.key});
@@ -92,7 +92,7 @@ class WelcomeScreenView extends StatelessWidget {
               _primaryButton(
                 title: 'Log in',
                 color: const Color(0xFF0D1B3E),
-                onTap: () => Get.to(() => SignInView()),
+                onTap: () => Get.to(() => HandyLoginScreen()),
               ),
               const SizedBox(height: 20),
               TextButton(

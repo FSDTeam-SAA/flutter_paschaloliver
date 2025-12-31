@@ -1,0 +1,809 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+class WorkScheduleScreen extends StatefulWidget {
+  const WorkScheduleScreen({super.key});
+
+  @override
+  State<WorkScheduleScreen> createState() => _WorkScheduleScreenState();
+}
+
+class _WorkScheduleScreenState extends State<WorkScheduleScreen> {
+  Color get _brandGreen => const Color(0xFF27AE60);
+
+  late List<DaySchedule> _days;
+  bool _hasChanges = false; // for "leave without saving?" sheet
+
+  @override
+  void initState() {
+    super.initState();
+    // you can read selected areas here if needed:
+    // final selectedAreas = Get.arguments as List<String>?;
+    _days = [
+      DaySchedule(label: 'Monday'),
+      DaySchedule(label: 'Tuesday'),
+      DaySchedule(label: 'Wednesday'),
+      DaySchedule(label: 'Thursday'),
+      DaySchedule(label: 'Friday'),
+      DaySchedule(label: 'Saturday'),
+      DaySchedule(label: 'Sunday'),
+    ];
+  }
+
+  bool get _hasActiveDay =>
+      _days.any((d) => d.isActive && d.ranges.isNotEmpty);
+
+  bool get _isFormValid => _days
+      .where((d) => d.isActive)
+      .every((d) => d.ranges.isNotEmpty && d.ranges.every((r) => r.isValid));
+
+  int get _activeSlotsCount =>
+      _days.fold(0, (sum, d) => sum + (d.isActive ? d.ranges.length : 0));
+
+  // ---------------------------------------------------------------------------
+  // BUILD
+  // ---------------------------------------------------------------------------
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: _onWillPop, // handle system back
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _buildTopBar(),
+              const SizedBox(height: 12),
+              _buildTitle(),
+              const SizedBox(height: 12),
+              const Divider(height: 1),
+              Expanded(
+                child: ListView.separated(
+                  itemCount: _days.length,
+                  separatorBuilder: (_, __) =>
+                      Divider(height: 1, color: Colors.grey.shade200),
+                  itemBuilder: (context, index) {
+                    final day = _days[index];
+                    return _buildDayRow(day, index);
+                  },
+                ),
+              ),
+              const Divider(height: 1),
+              _buildConfirmButton(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // TOP BAR + TITLE
+  // ---------------------------------------------------------------------------
+
+  Widget _buildTopBar() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
+                onPressed: _handleBackPressed,
+              ),
+              const Spacer(),
+            ],
+          ),
+          const SizedBox(height: 4),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(99),
+            child: LinearProgressIndicator(
+              value: 0.7, // adjust step
+              minHeight: 6,
+              backgroundColor: Colors.grey.shade300,
+              valueColor: AlwaysStoppedAnimation<Color>(_brandGreen),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTitle() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Work Schedule',
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w700,
+              color: _brandGreen,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'When are you available to offer your services?',
+            style: TextStyle(
+              fontSize: 13,
+              color: Colors.grey.shade700,
+              height: 1.4,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // DAY ROW
+  // ---------------------------------------------------------------------------
+
+  Widget _buildDayRow(DaySchedule day, int index) {
+    final isActive = day.isActive;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  day.label,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              Switch(
+                activeColor: _brandGreen,
+                value: isActive,
+                onChanged: (value) {
+                  _hasChanges = true;
+                  setState(() {
+                    day.isActive = value;
+                    if (!value) {
+                      day.ranges.clear();
+                    } else {
+                      // just turned ON → immediately open sheet
+                      _openScheduleBottomSheet(index);
+                    }
+                  });
+                },
+              ),
+              const SizedBox(width: 4),
+              Text(
+                isActive ? 'Available' : 'Not Activate',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: isActive ? _brandGreen : Colors.grey.shade600,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+          if (isActive) const SizedBox(height: 6),
+
+          if (isActive) ...[
+            for (int i = 0; i < day.ranges.length; i++)
+              _buildTimeRangeRow(day, index, i),
+            const SizedBox(height: 4),
+            GestureDetector(
+              onTap: () {
+                _hasChanges = true;
+                _openScheduleBottomSheet(index);
+              },
+              child: Text(
+                'Add hours',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: _brandGreen,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTimeRangeRow(DaySchedule day, int dayIndex, int rangeIndex) {
+    final range = day.ranges[rangeIndex];
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              'From   ${range.formatStart()}   -   Until   ${range.formatEnd()}',
+              style: const TextStyle(fontSize: 13),
+            ),
+          ),
+          IconButton(
+            onPressed: () {
+              _hasChanges = true;
+              setState(() {
+                day.ranges.removeAt(rangeIndex);
+                if (day.ranges.isEmpty) {
+                  day.isActive = false;
+                }
+              });
+            },
+            icon: const Icon(Icons.close, size: 18),
+            splashRadius: 20,
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // BOTTOM SHEET: EDIT DAY SCHEDULE
+  // ---------------------------------------------------------------------------
+
+  Future<void> _openScheduleBottomSheet(int dayIndex) async {
+    final day = _days[dayIndex];
+
+    // default values
+    TimeOfDay start = const TimeOfDay(hour: 8, minute: 0);
+    TimeOfDay end = const TimeOfDay(hour: 18, minute: 0);
+
+    if (day.ranges.isNotEmpty) {
+      start = day.ranges.last.start;
+      end = day.ranges.last.end;
+    }
+
+    final result = await showModalBottomSheet<TimeRange>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
+      ),
+      builder: (context) {
+        return _ScheduleBottomSheetContent(
+          title: 'Schedule ${day.label}',
+          initialStart: start,
+          initialEnd: end,
+          brandGreen: _brandGreen,
+        );
+      },
+    );
+
+    if (result != null && result.isValid) {
+      _hasChanges = true;
+      setState(() {
+        day.isActive = true;
+        day.ranges.add(result);
+      });
+    } else {
+      if (day.ranges.isEmpty) {
+        setState(() => day.isActive = false);
+      }
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // CONFIRM BUTTON + FLOW SHEETS
+  // ---------------------------------------------------------------------------
+
+  Widget _buildConfirmButton() {
+    final enabled = _isFormValid && _hasActiveDay;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 10, 24, 20),
+      child: SizedBox(
+        height: 50,
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor:
+            enabled ? _brandGreen : Colors.grey.shade300,
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          onPressed: enabled ? _handleConfirmPressed : null,
+          child: const Text(
+            'Confirm',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _handleConfirmPressed() {
+    if (_activeSlotsCount <= 2) {
+      _showScheduleCheckSheet();
+      return;
+    }
+
+    _hasChanges = false;
+    // TODO: send schedule to backend here
+    Get.back(result: _days);
+  }
+
+  Future<void> _showScheduleCheckSheet() async {
+    await showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding:
+          const EdgeInsets.symmetric(horizontal: 24.0, vertical: 18),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+              ),
+              Row(
+                children: [
+                  const Expanded(
+                    child: Text(
+                      'Is your schedule correct?',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close, size: 18),
+                    splashRadius: 20,
+                  )
+                ],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'You have selected very few hours as Available. '
+                    'Remember, the more hours available, the more options '
+                    'the client will have when booking your service.',
+                style: TextStyle(
+                  fontSize: 13,
+                  height: 1.4,
+                  color: Colors.grey.shade700,
+                ),
+              ),
+              const SizedBox(height: 18),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: _brandGreen),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(
+                        'Edit Schedule',
+                        style: TextStyle(
+                          color: _brandGreen,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _brandGreen,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        _hasChanges = false;
+                        Get.back(result: _days);
+                      },
+                      child: const Text(
+                        'Continue',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // LEAVE WITHOUT SAVING?
+  // ---------------------------------------------------------------------------
+
+  void _handleBackPressed() async {
+    if (!await _onWillPop()) return;
+    Get.back();
+  }
+
+  Future<bool> _onWillPop() async {
+    if (!_hasChanges) return true;
+
+    final result = await showModalBottomSheet<bool>(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding:
+          const EdgeInsets.symmetric(horizontal: 24.0, vertical: 18),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+              ),
+              Row(
+                children: [
+                  const Expanded(
+                    child: Text(
+                      'Do you want to leave without saving?',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context, false),
+                    icon: const Icon(Icons.close, size: 18),
+                    splashRadius: 20,
+                  )
+                ],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'If you leave without saving, you will lose all the '
+                    'information completed in this section.',
+                style: TextStyle(
+                  fontSize: 13,
+                  height: 1.4,
+                  color: Colors.grey.shade700,
+                ),
+              ),
+              const SizedBox(height: 18),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: _brandGreen),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      onPressed: () =>
+                          Navigator.pop<bool>(context, true),
+                      child: Text(
+                        'Leave anyway',
+                        style: TextStyle(
+                          color: _brandGreen,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _brandGreen,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      onPressed: () =>
+                          Navigator.pop<bool>(context, false),
+                      child: const Text(
+                        'Stay',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+            ],
+          ),
+        );
+      },
+    );
+
+    return result ?? false;
+  }
+}
+
+// ============================================================================
+// MODELS
+// ============================================================================
+
+class TimeRange {
+  TimeOfDay start;
+  TimeOfDay end;
+
+  TimeRange({required this.start, required this.end});
+
+  bool get isValid =>
+      start.hour < end.hour ||
+          (start.hour == end.hour && start.minute < end.minute);
+
+  String formatStart() => _formatTimeOfDay(start);
+  String formatEnd() => _formatTimeOfDay(end);
+
+  static String _formatTimeOfDay(TimeOfDay t) {
+    final h = t.hour.toString().padLeft(2, '0');
+    final m = t.minute.toString().padLeft(2, '0');
+    return '$h:$m';
+  }
+}
+
+class DaySchedule {
+  final String label;
+  bool isActive;
+  final List<TimeRange> ranges;
+
+  DaySchedule({
+    required this.label,
+    this.isActive = false,
+    List<TimeRange>? ranges,
+  }) : ranges = ranges ?? [];
+}
+
+// ============================================================================
+// BOTTOM SHEET CONTENT W/ PICKERS
+// ============================================================================
+
+class _ScheduleBottomSheetContent extends StatefulWidget {
+  final String title;
+  final TimeOfDay initialStart;
+  final TimeOfDay initialEnd;
+  final Color brandGreen;
+
+  const _ScheduleBottomSheetContent({
+    required this.title,
+    required this.initialStart,
+    required this.initialEnd,
+    required this.brandGreen,
+  });
+
+  @override
+  State<_ScheduleBottomSheetContent> createState() =>
+      _ScheduleBottomSheetContentState();
+}
+
+class _ScheduleBottomSheetContentState
+    extends State<_ScheduleBottomSheetContent> {
+  late int _startHourIndex;
+  late int _startMinuteIndex;
+  late int _endHourIndex;
+  late int _endMinuteIndex;
+
+  final List<int> _hours = List.generate(24, (i) => i); // 0-23
+  final List<int> _minutes = const [0, 15, 30, 45];
+
+  @override
+  void initState() {
+    super.initState();
+    _startHourIndex =
+        _hours.indexOf(widget.initialStart.hour).clamp(0, _hours.length - 1);
+    _endHourIndex =
+        _hours.indexOf(widget.initialEnd.hour).clamp(0, _hours.length - 1);
+    _startMinuteIndex = _minutes
+        .indexOf(widget.initialStart.minute)
+        .clamp(0, _minutes.length - 1);
+    _endMinuteIndex = _minutes
+        .indexOf(widget.initialEnd.minute)
+        .clamp(0, _minutes.length - 1);
+  }
+
+  TimeOfDay get _startTime => TimeOfDay(
+      hour: _hours[_startHourIndex], minute: _minutes[_startMinuteIndex]);
+
+  TimeOfDay get _endTime =>
+      TimeOfDay(hour: _hours[_endHourIndex], minute: _minutes[_endMinuteIndex]);
+
+  @override
+  Widget build(BuildContext context) {
+    final bottomPadding = MediaQuery.of(context).viewInsets.bottom;
+
+    return Padding(
+      padding: EdgeInsets.only(
+        left: 24,
+        right: 24,
+        top: 18,
+        bottom: bottomPadding + 18,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 40,
+            height: 4,
+            margin: const EdgeInsets.only(bottom: 16),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade300,
+              borderRadius: BorderRadius.circular(999),
+            ),
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  widget.title,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: const Icon(Icons.close, size: 18),
+                splashRadius: 20,
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: const [
+              Text('From:', style: TextStyle(fontSize: 13)),
+              Text('Until:', style: TextStyle(fontSize: 13)),
+            ],
+          ),
+          const SizedBox(height: 8),
+
+          SizedBox(
+            height: 170,
+            child: Row(
+              children: [
+                Expanded(child: _buildTimePicker(isStart: true)),
+                const SizedBox(width: 16),
+                Expanded(child: _buildTimePicker(isStart: false)),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          SizedBox(
+            width: double.infinity,
+            height: 48,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: widget.brandGreen,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              onPressed: () {
+                final range = TimeRange(start: _startTime, end: _endTime);
+                Navigator.pop(context, range);
+              },
+              child: const Text(
+                'Save',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTimePicker({required bool isStart}) {
+    final hourController = FixedExtentScrollController(
+      initialItem: isStart ? _startHourIndex : _endHourIndex,
+    );
+    final minuteController = FixedExtentScrollController(
+      initialItem: isStart ? _startMinuteIndex : _endMinuteIndex,
+    );
+
+    return Row(
+      children: [
+        Expanded(
+          child: CupertinoPicker(
+            scrollController: hourController,
+            itemExtent: 32,
+            onSelectedItemChanged: (idx) {
+              setState(() {
+                if (isStart) {
+                  _startHourIndex = idx;
+                } else {
+                  _endHourIndex = idx;
+                }
+              });
+            },
+            children: _hours
+                .map(
+                  (h) => Center(
+                child: Text(h.toString().padLeft(2, '0')),
+              ),
+            )
+                .toList(),
+          ),
+        ),
+        const Text(':', style: TextStyle(fontSize: 18)),
+        Expanded(
+          child: CupertinoPicker(
+            scrollController: minuteController,
+            itemExtent: 32,
+            onSelectedItemChanged: (idx) {
+              setState(() {
+                if (isStart) {
+                  _startMinuteIndex = idx;
+                } else {
+                  _endMinuteIndex = idx;
+                }
+              });
+            },
+            children: _minutes
+                .map(
+                  (m) => Center(
+                child: Text(m.toString().padLeft(2, '0')),
+              ),
+            )
+                .toList(),
+          ),
+        ),
+      ],
+    );
+  }
+}

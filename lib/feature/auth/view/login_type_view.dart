@@ -92,7 +92,7 @@ class LoginTypeView extends StatelessWidget {
               _primaryButton(
                 title: 'Log in',
                 color: const Color(0xFF0D1B3E),
-                onTap: () => Get.to(() => SignInView()),
+                onTap: () => Get.to(() => HandyEmailLoginScreen()),
               ),
               const SizedBox(height: 20),
               TextButton(

@@ -87,7 +87,7 @@ class _ChooseAccountTypeViewState extends State<ChooseAccountTypeView> {
     final role = selectedType == AccountType.user ? 'customer' : 'provider';
 
     roleController.setRole(role);
-    Get.to(() => SignUpView());
+    Get.to(() => SignUpScreen());
   }
 
   Widget _accountOption({

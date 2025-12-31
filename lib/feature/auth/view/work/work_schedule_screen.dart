@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../profile/profile_screen.dart';
+
 class WorkScheduleScreen extends StatefulWidget {
   const WorkScheduleScreen({super.key});
 
@@ -31,8 +33,7 @@ class _WorkScheduleScreenState extends State<WorkScheduleScreen> {
     ];
   }
 
-  bool get _hasActiveDay =>
-      _days.any((d) => d.isActive && d.ranges.isNotEmpty);
+  bool get _hasActiveDay => _days.any((d) => d.isActive && d.ranges.isNotEmpty);
 
   bool get _isFormValid => _days
       .where((d) => d.isActive)
@@ -306,8 +307,7 @@ class _WorkScheduleScreenState extends State<WorkScheduleScreen> {
         height: 50,
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor:
-            enabled ? _brandGreen : Colors.grey.shade300,
+            backgroundColor: enabled ? _brandGreen : Colors.grey.shade300,
             elevation: 0,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
@@ -347,8 +347,7 @@ class _WorkScheduleScreenState extends State<WorkScheduleScreen> {
       ),
       builder: (context) {
         return Padding(
-          padding:
-          const EdgeInsets.symmetric(horizontal: 24.0, vertical: 18),
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 18),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -376,14 +375,14 @@ class _WorkScheduleScreenState extends State<WorkScheduleScreen> {
                     onPressed: () => Navigator.pop(context),
                     icon: const Icon(Icons.close, size: 18),
                     splashRadius: 20,
-                  )
+                  ),
                 ],
               ),
               const SizedBox(height: 6),
               Text(
                 'You have selected very few hours as Available. '
-                    'Remember, the more hours available, the more options '
-                    'the client will have when booking your service.',
+                'Remember, the more hours available, the more options '
+                'the client will have when booking your service.',
                 style: TextStyle(
                   fontSize: 13,
                   height: 1.4,
@@ -422,10 +421,12 @@ class _WorkScheduleScreenState extends State<WorkScheduleScreen> {
                         ),
                       ),
                       onPressed: () {
-                        Navigator.pop(context);
+                        Navigator.pop(context); // close bottom sheet
                         _hasChanges = false;
-                        Get.back(result: _days);
+
+                        Get.to(() => const ProfilePictureScreen());
                       },
+
                       child: const Text(
                         'Continue',
                         style: TextStyle(
@@ -466,8 +467,7 @@ class _WorkScheduleScreenState extends State<WorkScheduleScreen> {
       ),
       builder: (context) {
         return Padding(
-          padding:
-          const EdgeInsets.symmetric(horizontal: 24.0, vertical: 18),
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 18),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -495,13 +495,13 @@ class _WorkScheduleScreenState extends State<WorkScheduleScreen> {
                     onPressed: () => Navigator.pop(context, false),
                     icon: const Icon(Icons.close, size: 18),
                     splashRadius: 20,
-                  )
+                  ),
                 ],
               ),
               const SizedBox(height: 6),
               Text(
                 'If you leave without saving, you will lose all the '
-                    'information completed in this section.',
+                'information completed in this section.',
                 style: TextStyle(
                   fontSize: 13,
                   height: 1.4,
@@ -519,8 +519,7 @@ class _WorkScheduleScreenState extends State<WorkScheduleScreen> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      onPressed: () =>
-                          Navigator.pop<bool>(context, true),
+                      onPressed: () => Navigator.pop<bool>(context, true),
                       child: Text(
                         'Leave anyway',
                         style: TextStyle(
@@ -540,8 +539,7 @@ class _WorkScheduleScreenState extends State<WorkScheduleScreen> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      onPressed: () =>
-                          Navigator.pop<bool>(context, false),
+                      onPressed: () => Navigator.pop<bool>(context, false),
                       child: const Text(
                         'Stay',
                         style: TextStyle(
@@ -577,9 +575,10 @@ class TimeRange {
 
   bool get isValid =>
       start.hour < end.hour ||
-          (start.hour == end.hour && start.minute < end.minute);
+      (start.hour == end.hour && start.minute < end.minute);
 
   String formatStart() => _formatTimeOfDay(start);
+
   String formatEnd() => _formatTimeOfDay(end);
 
   static String _formatTimeOfDay(TimeOfDay t) {
@@ -636,10 +635,12 @@ class _ScheduleBottomSheetContentState
   @override
   void initState() {
     super.initState();
-    _startHourIndex =
-        _hours.indexOf(widget.initialStart.hour).clamp(0, _hours.length - 1);
-    _endHourIndex =
-        _hours.indexOf(widget.initialEnd.hour).clamp(0, _hours.length - 1);
+    _startHourIndex = _hours
+        .indexOf(widget.initialStart.hour)
+        .clamp(0, _hours.length - 1);
+    _endHourIndex = _hours
+        .indexOf(widget.initialEnd.hour)
+        .clamp(0, _hours.length - 1);
     _startMinuteIndex = _minutes
         .indexOf(widget.initialStart.minute)
         .clamp(0, _minutes.length - 1);
@@ -649,7 +650,9 @@ class _ScheduleBottomSheetContentState
   }
 
   TimeOfDay get _startTime => TimeOfDay(
-      hour: _hours[_startHourIndex], minute: _minutes[_startMinuteIndex]);
+    hour: _hours[_startHourIndex],
+    minute: _minutes[_startMinuteIndex],
+  );
 
   TimeOfDay get _endTime =>
       TimeOfDay(hour: _hours[_endHourIndex], minute: _minutes[_endMinuteIndex]);
@@ -772,11 +775,7 @@ class _ScheduleBottomSheetContentState
               });
             },
             children: _hours
-                .map(
-                  (h) => Center(
-                child: Text(h.toString().padLeft(2, '0')),
-              ),
-            )
+                .map((h) => Center(child: Text(h.toString().padLeft(2, '0'))))
                 .toList(),
           ),
         ),
@@ -795,11 +794,7 @@ class _ScheduleBottomSheetContentState
               });
             },
             children: _minutes
-                .map(
-                  (m) => Center(
-                child: Text(m.toString().padLeft(2, '0')),
-              ),
-            )
+                .map((m) => Center(child: Text(m.toString().padLeft(2, '0'))))
                 .toList(),
           ),
         ),

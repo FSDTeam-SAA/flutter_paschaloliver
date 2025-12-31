@@ -22,6 +22,16 @@ class Images {
   static const String lock1 = 'assets/profile/lock1.png';
   static const String term = 'assets/profile/terms.png';
   static const String faq = 'assets/profile/faq.png';
+  static const String bad = 'assets/profile/bad_pic.png';
+  static const String good = 'assets/profile/good_pic.png';
+
+  //information-------------------------------
+  static const String bulb = 'assets/information/bulb.png';
+  static const String idFront = 'assets/image_20.png';
+  static const String idBack  = 'assets/images/image_20.png';
+
+
+
 
   static const String account = 'assets/images/account.png';
 

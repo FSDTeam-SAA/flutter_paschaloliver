@@ -4,6 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'package:paschaloliver/feature/splash/splash_view.dart';
 
+import 'feature/user/app_ground_user.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -28,7 +30,7 @@ class MyApp extends StatelessWidget {
 
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const SplashScreen(),
+      home: const UserAppGround(),
     );
   }
 }

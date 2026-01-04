@@ -29,6 +29,8 @@ class Images {
   static const String interiorIcon = 'assets/calender/interior.png';
   static const String pestIcon = 'assets/calender/pest.png';
   static const String kitchenIcon = 'assets/calender/kitchen_icon.png';
+  static const String cleaningAndhandymanIcon = 'assets/calender/image _01.png';
+
 
 
 
@@ -48,6 +50,9 @@ class Images {
   static const String requestsIcon = 'assets/message/Vector.png';
   static const String userIcon = 'assets/message/user-01.png';
   static const String hundredIcon = 'assets/message/100_percent.png';
+  static const String searchIcon = 'assets/message/Frame.png';
+  static const String NoFavoIcon = 'assets/message/no_favourite.png';
+  static const String homeNBg = 'assets/calender/Frame 2147230306.png';
 
 
   // profile ====================

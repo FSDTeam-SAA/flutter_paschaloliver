@@ -59,7 +59,7 @@ class BookingEndpoints {
   static String byId(String id) => "$baseApiUrl/bookings/$id";
   static String updateStatus(String id) => "$baseApiUrl/bookings/$id/status";
   static String history(String status) =>
-      "$baseApiUrl/bookings/history?status=$status";
+      "$baseApiUrl/bookings/requests?status=$status";
 
   // live-join
   static String liveJoin = "$baseApiUrl/booking/live-join";

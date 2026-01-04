@@ -1,7 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:paschaloliver/feature/auth/view/sign_in_view.dart';
-
-import '../../../core/constants/assets.dart'; // for Images.welcome
+import '../../../core/constants/assets.dart'; // Images.welcome, Images.google
 
 class HandyLoginScreen extends StatelessWidget {
   const HandyLoginScreen({super.key});
@@ -13,9 +13,7 @@ class HandyLoginScreen extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          // ------------------------
           // Background illustration
-          // ------------------------
           Positioned.fill(
             child: Image.asset(
               Images.welcome,
@@ -23,9 +21,7 @@ class HandyLoginScreen extends StatelessWidget {
             ),
           ),
 
-          // ------------------------
-          // Dark gradient overlay
-          // ------------------------
+          // Dark overlay
           Positioned.fill(
             child: DecoratedBox(
               decoration: BoxDecoration(
@@ -41,12 +37,10 @@ class HandyLoginScreen extends StatelessWidget {
             ),
           ),
 
-          // ------------------------
           // Bottom sheet
-          // ------------------------
           SafeArea(
             top: true,
-            bottom: false, // let us draw under the home indicator
+            bottom: false,
             child: Column(
               children: [
                 const Spacer(),
@@ -63,7 +57,6 @@ class HandyLoginScreen extends StatelessWidget {
 /// ---------------------------------------------------------------------------
 /// BOTTOM SHEET CONTENT
 /// ---------------------------------------------------------------------------
-
 class _BottomSheet extends StatelessWidget {
   const _BottomSheet({required this.green});
 
@@ -72,7 +65,6 @@ class _BottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.of(context).padding.bottom;
-    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
 
     return Container(
       width: double.infinity,
@@ -131,24 +123,20 @@ class _BottomSheet extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 18),
 
-          // Apple (only on iOS, like real apps)
-          if (isIOS) ...[
-            _SocialLoginButton(
-              background: Colors.black,
-              borderColor: Colors.black,
-              textColor: Colors.white,
-              label: 'Continue with Apple',
-              icon: const Icon(Icons.apple, color: Colors.white, size: 20),
-              onTap: () {
-                // TODO: implement Apple login
-              },
-            ),
-            const SizedBox(height: 12),
-          ],
-
-
+          // ✅ Apple (always visible like your screenshot)
+          _SocialLoginButton(
+            background: Colors.black,
+            borderColor: Colors.black,
+            textColor: Colors.white,
+            label: 'Continue with Apple',
+            icon: const Icon(Icons.apple, color: Colors.white, size: 20),
+            onTap: () {
+              // TODO: implement Apple login
+            },
+          ),
+          const SizedBox(height: 12),
 
           // Facebook
           _SocialLoginButton(
@@ -171,20 +159,18 @@ class _BottomSheet extends StatelessWidget {
             label: 'Continue with Google',
             icon: Padding(
               padding: const EdgeInsets.all(2.0),
-                child: Image.asset(
-                  Images.google,        // your Google logo asset path
-                  height: 18,
-                  width: 18,
-                  fit: BoxFit.contain,
-                )
-
-
+              child: Image.asset(
+                Images.google,
+                height: 18,
+                width: 18,
+                fit: BoxFit.contain,
+              ),
             ),
             onTap: () {
               // TODO: implement Google login
             },
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 18),
 
           // "or" divider
           Row(
@@ -203,15 +189,14 @@ class _BottomSheet extends StatelessWidget {
               Expanded(child: _DividerLine()),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 18),
 
-          // Log in with email button
+          // Log in with email
           SizedBox(
             width: double.infinity,
             height: 48,
             child: ElevatedButton(
               onPressed: () {
-                // TODO: push your HandyEmailLoginScreen here
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (_) => const HandyEmailLoginScreen(),
@@ -224,15 +209,21 @@ class _BottomSheet extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
-                textStyle: const TextStyle(
+              ),
+              child: const Text(
+                'Log in with email',
+                style: TextStyle(
+                  fontFamily: 'Urbanist',
                   fontSize: 16,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w500, // Medium (500)
+                  height: 1.10, // 110%
+                  color: Color(0xFFFFFFFF),
+                  letterSpacing: 0,
                 ),
               ),
-              child: const Text('Log in with email'),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
 
           // Terms text
           const _TermsAndPrivacyText(),
@@ -278,27 +269,29 @@ class _SocialLoginButton extends StatelessWidget {
             border: Border.all(color: borderColor, width: 1),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 14),
-          child: Row(
+          child: Stack(
+            alignment: Alignment.center,
             children: [
-              SizedBox(
-                width: 24,
-                height: 24,
-                child: Center(child: icon),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  label,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: textColor,
-                  ),
+              // LEFT ICON
+              Align(
+                alignment: Alignment.centerLeft,
+                child: SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: Center(child: icon),
                 ),
               ),
-              // to keep text centered (icon space)
-              const SizedBox(width: 24),
+
+              // CENTER TEXT (perfect center like screenshot)
+              Text(
+                label,
+                textAlign: TextAlign.justify,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: textColor,
+                ),
+              ),
             ],
           ),
         ),
@@ -306,6 +299,7 @@ class _SocialLoginButton extends StatelessWidget {
     );
   }
 }
+
 
 class _DividerLine extends StatelessWidget {
   const _DividerLine();
@@ -328,6 +322,7 @@ class _TermsAndPrivacyText extends StatelessWidget {
       TextSpan(
         text: 'By creating an account, I accept the ',
         style: const TextStyle(
+          fontFamily: 'Urbanist',
           fontSize: 11,
           color: Colors.black54,
           height: 1.4,

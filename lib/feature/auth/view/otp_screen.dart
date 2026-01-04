@@ -189,7 +189,7 @@ class _HandyOtpScreenState extends State<HandyOtpScreen> {
                       Get.snackbar(
                         'Invalid code',
                         'Please enter the 4-digit code.',
-                        snackPosition: SnackPosition.BOTTOM,
+                        snackPosition: SnackPosition.TOP,
                       );
                       return;
                     }

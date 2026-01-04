@@ -30,11 +30,19 @@ class _ChooseAccountTypeViewState extends State<ChooseAccountTypeView> {
           children: [
             const Text(
               'What will you do on HandyNaija?',
-              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: 24,
+                fontWeight: FontWeight.w600, // SemiBold
+                height: 1.2,                 // 120%
+                letterSpacing: 0,
+                color: Color(0xFF000000),
+              ),
             ),
+
             SizedBox(height: 15),
             Text(
-              "This decision is not final. you can later be both a client and a professional from the same account if you wish.",
+              "Don't worry—this decision isn't permanent. You can always switch later and use the same account as both a client and a professional.",
               style: TextStyle(color: Colors.black),
             ),
             const SizedBox(height: 32),

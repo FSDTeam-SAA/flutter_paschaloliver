@@ -1,5 +1,6 @@
 class Images {
   static const String appLogo = 'assets/images/appLogo.png';
+  static const String wellcomeappLogo = 'assets/images/image_133.png';
 
 
   static const String welcome = 'assets/images/Wellcome.png';
@@ -8,11 +9,46 @@ class Images {
   static const String facebook = 'assets/icons/facebook.png';
 
 
+  //calender
+  static const String homeIcon = 'assets/calender/home.png';
+  static const String techItIcon = 'assets/calender/tech_icon.png';
+  static const String beautyIcon = 'assets/calender/beauty.png';
+  static const String maintanceIcon = 'assets/calender/Group.png';
+  static const String automactionIcon = 'assets/calender/automation.png';
+  static const String mediaIcon = 'assets/calender/media.png';
+  static const String othersIcon = 'assets/calender/Layer_1.png';
+  static const String backbonIcon = 'assets/calender/backbon.png';
+
+
+
+  //listing
+  static const String cleaningIcon = 'assets/calender/cleaning.png';
+  static const String ironingIcon = 'assets/calender/ironing.png';
+  static const String handyIcon = 'assets/calender/handyman.png';
+  static const String paintIcon = 'assets/calender/painting.png';
+  static const String interiorIcon = 'assets/calender/interior.png';
+  static const String pestIcon = 'assets/calender/pest.png';
+  static const String kitchenIcon = 'assets/calender/kitchen_icon.png';
+
+
+
+
+
   //create account
   static const String men = 'assets/images/image_130.png';
   static const String onboarding2 = 'assets/images/image_127.png';
   static const String onboarding3 = 'assets/images/image_128.png';
   static const String onboarding4 = 'assets/images/image_129.png';
+
+
+  //message
+  static const String messageIcon = 'assets/message/message_icon.png';
+  static const String calenderIcon = 'assets/message/calendar_icon.png';
+  static const String listingIcon = 'assets/message/listing_icon.png';
+  static const String requestsIcon = 'assets/message/Vector.png';
+  static const String userIcon = 'assets/message/user-01.png';
+  static const String hundredIcon = 'assets/message/100_percent.png';
+
 
   // profile ====================
 

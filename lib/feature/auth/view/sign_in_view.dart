@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 
+import '../../../app_ground.dart';
 import '../../../core/constants/assets.dart';
 import 'forget_password.dart';
 
@@ -37,6 +38,8 @@ class _HandyEmailLoginScreenState extends State<HandyEmailLoginScreen> {
     final remember = _rememberMe;
 
     debugPrint('Login -> email: $email | remember: $remember');
+
+    Get.offAll(() => const AppGround()); // removes login screen from stack
   }
 
   @override

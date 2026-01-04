@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
+
 import 'package:paschaloliver/feature/splash/splash_view.dart';
-
-import 'feature/auth/view/sample.dart';
-
 
 void main() {
   runApp(const MyApp());
@@ -12,19 +11,24 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Paschal Oliver',
       theme: ThemeData(
+        useMaterial3: true,
+
+        // ✅ Urbanist everywhere
+        textTheme: GoogleFonts.urbanistTextTheme(
+          ThemeData.light().textTheme,
+        ),
+        // optional (helps some widgets that rely on fontFamily)
+        fontFamily: GoogleFonts.urbanist().fontFamily,
+
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      // home: SplashScreen(),
-      home: SplashScreen(),
+      home: const SplashScreen(),
     );
   }
 }
-
-

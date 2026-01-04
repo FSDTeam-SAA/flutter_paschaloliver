@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:paschaloliver/feature/auth/view/sign_in_view.dart';
-
 import '../../../core/constants/assets.dart';
 
 class HandyResetPasswordScreen extends StatefulWidget {
@@ -20,6 +18,9 @@ class _HandyResetPasswordScreenState extends State<HandyResetPasswordScreen> {
   bool _obscureNew = true;
   bool _obscureConfirm = true;
 
+  String? _newError;
+  String? _confirmError;
+
   Color get _brandGreen => const Color(0xFF27AE60);
   Color get _fieldBorder => const Color(0xFFDDDDDD);
   Color get _textColor => const Color(0xFF222222);
@@ -30,6 +31,65 @@ class _HandyResetPasswordScreenState extends State<HandyResetPasswordScreen> {
     _newPassCtrl.dispose();
     _confirmPassCtrl.dispose();
     super.dispose();
+  }
+
+  // ✅ YOUR SNACKBAR STYLE (TOP)
+  void _showSnack({
+    required String title,
+    required String message,
+  }) {
+    Get.closeCurrentSnackbar();
+    Get.snackbar(
+      title,
+      message,
+      snackPosition: SnackPosition.TOP,
+    );
+  }
+
+  bool _validate() {
+    final newPass = _newPassCtrl.text.trim();
+    final confirm = _confirmPassCtrl.text.trim();
+
+    String? newErr;
+    String? confirmErr;
+
+    if (newPass.isEmpty) {
+      newErr = "Please enter a new password";
+    } else if (newPass.length < 6) {
+      newErr = "Password must be at least 6 characters";
+    }
+
+    if (confirm.isEmpty) {
+      confirmErr = "Please confirm your password";
+    } else if (newPass != confirm) {
+      confirmErr = "Passwords do not match";
+    }
+
+    setState(() {
+      _newError = newErr;
+      _confirmError = confirmErr;
+    });
+
+    return newErr == null && confirmErr == null;
+  }
+
+  void _onContinue() {
+    if (!_validate()) {
+      // ✅ shows TOP snackbar
+      _showSnack(
+        title: "Invalid input",
+        message: "Please fix the highlighted fields and try again.",
+      );
+      return; // ✅ NO navigation
+    }
+
+    _showSnack(
+      title: "Success",
+      message: "Password updated successfully.",
+    );
+
+    // ✅ navigate to sign in only if valid
+    Get.offAll(() => const HandyEmailLoginScreen());
   }
 
   @override
@@ -44,12 +104,11 @@ class _HandyResetPasswordScreenState extends State<HandyResetPasswordScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // ---------------- LOGO ----------------
               const SizedBox(height: 8),
               SizedBox(
                 height: 90,
                 child: Image.asset(
-                  Images.appLogo, // 🔁 change to your logo path
+                  Images.appLogo,
                   fit: BoxFit.contain,
                 ),
               ),
@@ -65,7 +124,6 @@ class _HandyResetPasswordScreenState extends State<HandyResetPasswordScreen> {
               ),
               const SizedBox(height: 28),
 
-              // ---------------- TITLE ----------------
               Text(
                 'Reset Password',
                 style: TextStyle(
@@ -76,31 +134,32 @@ class _HandyResetPasswordScreenState extends State<HandyResetPasswordScreen> {
               ),
               const SizedBox(height: 28),
 
-              // ---------------- NEW PASSWORD ----------------
               _buildLabel('New Password'),
               const SizedBox(height: 6),
               _buildPasswordField(
                 controller: _newPassCtrl,
                 obscure: _obscureNew,
-                onToggle: () {
-                  setState(() => _obscureNew = !_obscureNew);
+                errorText: _newError,
+                onChanged: (_) {
+                  if (_newError != null) setState(() => _newError = null);
                 },
+                onToggle: () => setState(() => _obscureNew = !_obscureNew),
               ),
               const SizedBox(height: 18),
 
-              // ---------------- CONFIRM PASSWORD ----------------
               _buildLabel('Confirm New Password'),
               const SizedBox(height: 6),
               _buildPasswordField(
                 controller: _confirmPassCtrl,
                 obscure: _obscureConfirm,
-                onToggle: () {
-                  setState(() => _obscureConfirm = !_obscureConfirm);
+                errorText: _confirmError,
+                onChanged: (_) {
+                  if (_confirmError != null) setState(() => _confirmError = null);
                 },
+                onToggle: () => setState(() => _obscureConfirm = !_obscureConfirm),
               ),
               const SizedBox(height: 28),
 
-              // ---------------- CONTINUE BUTTON ----------------
               SizedBox(
                 width: double.infinity,
                 height: 50,
@@ -112,12 +171,7 @@ class _HandyResetPasswordScreenState extends State<HandyResetPasswordScreen> {
                     ),
                     elevation: 0,
                   ),
-                  onPressed: () {
-                    final newPass = _newPassCtrl.text.trim();
-                    final confirm = _confirmPassCtrl.text.trim();
-
-                    Get.to(() => const HandyEmailLoginScreen());
-                  },
+                  onPressed: _onContinue,
                   child: const Text(
                     'Continue',
                     style: TextStyle(
@@ -134,8 +188,6 @@ class _HandyResetPasswordScreenState extends State<HandyResetPasswordScreen> {
       ),
     );
   }
-
-  // ---------------- HELPERS ----------------
 
   Widget _buildLabel(String text) {
     return Align(
@@ -154,35 +206,64 @@ class _HandyResetPasswordScreenState extends State<HandyResetPasswordScreen> {
     required TextEditingController controller,
     required bool obscure,
     required VoidCallback onToggle,
+    required ValueChanged<String> onChanged,
+    String? errorText,
   }) {
-    return TextField(
-      controller: controller,
-      obscureText: obscure,
-      decoration: InputDecoration(
-        hintText: '***************',
-        hintStyle: TextStyle(
-          fontSize: 13,
-          color: _hintColor,
-        ),
-        contentPadding:
-        const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-        suffixIcon: IconButton(
-          icon: Icon(
-            obscure ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-            size: 20,
-            color: Colors.grey.shade500,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TextField(
+          controller: controller,
+          obscureText: obscure,
+          onChanged: onChanged,
+          decoration: InputDecoration(
+            hintText: '***************',
+            hintStyle: TextStyle(
+              fontSize: 13,
+              color: _hintColor,
+            ),
+            contentPadding:
+            const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+            suffixIcon: IconButton(
+              icon: Icon(
+                obscure
+                    ? Icons.visibility_off_outlined
+                    : Icons.visibility_outlined,
+                size: 20,
+                color: Colors.grey.shade500,
+              ),
+              onPressed: onToggle,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(6),
+              borderSide: BorderSide(color: _fieldBorder),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(6),
+              borderSide: BorderSide(color: _brandGreen, width: 1.4),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(6),
+              borderSide: const BorderSide(color: Colors.red, width: 1.2),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(6),
+              borderSide: const BorderSide(color: Colors.red, width: 1.2),
+            ),
           ),
-          onPressed: onToggle,
         ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(6),
-          borderSide: BorderSide(color: _fieldBorder),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(6),
-          borderSide: BorderSide(color: _brandGreen, width: 1.4),
-        ),
-      ),
+        if (errorText != null) ...[
+          const SizedBox(height: 6),
+          Text(
+            errorText,
+            style: const TextStyle(
+              color: Colors.red,
+              fontSize: 12.5,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ],
     );
   }
 }
